@@ -25,7 +25,6 @@ public class UserController {
     private final UserRepository userRepository;
     private final HttpSession session;
 
-
     @PostMapping("/login")
     public String login(UserRequest.LoginDTO requestDTO){
         // 1. 유효성 검사
@@ -86,6 +85,7 @@ public class UserController {
 
     @GetMapping("/logout")
     public String logout() {
+        session.invalidate(); // 세션에 있는 것들을 삭제
         return "redirect:/";
     }
 
