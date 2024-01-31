@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.HttpSession;
 
 /**
- * 컨트롤러<p></p>
- * 1. 요청받기 (URL (URI포함))
- * 2. 데이터(바디)는 어떻게? DTO로 받음
- * 3. 기본 mime 전략 : x-www-form-urlencoded (username=ssar&password=1234)
- * 4. 유효성 검사하기 (바디 데이터가 있다면)
- * 5. 클라이언트가 View만 원하는지? 혹은 DB처리 후 View도 원하는지?
- * 6. View만 원하면 view를 응답하면 끝
- * 7. DB처리를 원하면 Model(DAO)에게 위임 후 View를 응답하면 끝
+ * <p>컨트롤러</p>
+ * <p>1. 요청받기 (URL (URI포함))</p>
+ * <p>2. 데이터(바디)는 어떻게? DTO로 받음</p>
+ * <p>3. 기본 mime 전략 : x-www-form-urlencoded (username=ssar&password=1234)</p>
+ * <p>4. 유효성 검사하기 (바디 데이터가 있다면)</p>
+ * <p>5. 클라이언트가 View만 원하는지? 혹은 DB처리 후 View도 원하는지?</p>
+ * <p>6. View만 원하면 view를 응답하면 끝</p>
+ * <p>7. DB처리를 원하면 Model(DAO)에게 위임 후 View를 응답하면 끝</p>
  */
 
 @RequiredArgsConstructor
@@ -55,10 +55,17 @@ public class UserController {
             return "error/400";
         }
 
-        // 2. Model에게 위임하기
-        userRepository.save(requestDTO);
+        // 2. 동일 username 체크 (나중에 하나의 트랜잭션으로 묶는 게 좋다)
+        User user = userRepository.findByUsername(requestDTO.getUsername());
+        if (user == null) {
+            // 3. Model에게 위임하기
 
-        // 3. 응답
+            userRepository.save(requestDTO);
+        } else {
+            return "error/400";
+        }
+
+        // 4. 응답
         return "redirect:/loginForm";
     }
 
