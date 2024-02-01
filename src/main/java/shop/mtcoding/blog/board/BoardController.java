@@ -3,9 +3,12 @@ package shop.mtcoding.blog.board;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import shop.mtcoding.blog.user.User;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -13,16 +16,27 @@ import javax.servlet.http.HttpSession;
 public class BoardController {
 
     private final HttpSession session;
+    private final BoardRepository boardRepository;
 
+    // http://localhost:8080?page=0
     @GetMapping({ "/", "/board" })
-    public String index() {
+    public String index(HttpServletRequest request, @RequestParam(defaultValue = "0") int page) {
+        System.out.println("페이지 : " + page);
+        List<Board> boardList = boardRepository.findAll(page);
+        request.setAttribute("boardList", boardList);
 
-//        User sessionUser = (User) session.getAttribute("sessionUser");
-//        if(sessionUser == null) {
-//            System.out.println("로그인 안 된 상태입니다.");
-//        } else {
-//            System.out.println("로그인 된 상태입니다.");
-//        }
+        int currentPage = page;
+        int nextPage = currentPage + 1;
+        int prevPage = currentPage - 1;
+        request.setAttribute("nextPage", nextPage);
+        request.setAttribute("prevPage", prevPage);
+
+        boolean first = currentPage == 0 ? true : false;
+
+        int totalCount = 4;
+
+        boolean last = true;
+        request.setAttribute("first", first);
 
         return "index";
     }
